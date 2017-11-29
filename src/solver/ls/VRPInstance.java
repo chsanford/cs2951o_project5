@@ -49,4 +49,25 @@ public class VRPInstance
 	for (int i = 0; i < numCustomers; i++)
 		System.out.println(demandOfCustomer[i] + " " + xCoordOfCustomer[i] + " " + yCoordOfCustomer[i]);
   }
+
+
+  private findFeasibleSolution() {
+	cp = new IloCP();
+	IloIntVar[] assignedToVehicleVC = new IloIntVar[numVehicles][numCustomers];
+	IloIntExpr[] assignedToVehicleCV = new IloIntExpr[numCustomers][numVehicles];
+	for (int v = 0; v < numVehicles; v++) {
+		for (int c = 0; c < numCustomers; c++) {
+			assignedToVehicleVC[v][c] = cp.intVar(0, 1);
+			assignedToVehicleCV[c][v] = assignedToVehicleVC[v][c];
+		}
+		cp.add(cp.ge(cp.prod(assignedToVehicleVC[v], demandOfCustomer), vehicleCapacity));
+	}
+	for (int c = 0; c < numCustomers; c++) {
+		cp.add(cp.eq(cp.sum(assignedToVehicleCV[c]), 1));
+	}
+	if(cp.solve()) {}
+}
+}
+
+}
 }
