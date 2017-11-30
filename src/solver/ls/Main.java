@@ -1,7 +1,5 @@
 package solver.ls;
 
-import java.io.FileNotFoundException;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -23,6 +21,7 @@ public class Main
 	Timer watch = new Timer();
 	watch.start();
 	VRPInstance instance = new VRPInstance(input);
+	instance.outputSolution(instance.findFeasibleSolution(), filename + ".sol");
 	watch.stop();
 
 	System.out.println("Instance: " + filename + 
