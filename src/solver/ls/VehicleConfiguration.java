@@ -11,6 +11,7 @@ public class VehicleConfiguration {
 	int numVehicles;           	// the number of vehicles
 	int vehicleCapacity;			// the capacity of the vehicles
 	Customer[] customers;
+	Customer depot;
 	
 	List<List<Customer>> vehicleRoutesVC;
 	int[] vehicleDemandV;
@@ -26,6 +27,7 @@ public class VehicleConfiguration {
 		numVehicles = vrp.numVehicles;
 		vehicleCapacity = vrp.vehicleCapacity;
 		customers = vrp.customers;
+		depot = vrp.depot;
 		
 		this.vehicleRoutesVC = vehicleRoutesVC;
 		vehicleDemandV = new int[numVehicles];
@@ -35,13 +37,13 @@ public class VehicleConfiguration {
 			for (int c = 0; c < vehicleRoutesVC.get(v).size(); c++) {
 				vehicleDemandV[v] += vehicleRoutesVC.get(v).get(c).demand;
 				if (c == 0) {
-					vehicleDistanceV[v] += vehicleRoutesVC.get(v).get(c).distanceTo(customers[0]);
+					vehicleDistanceV[v] += vehicleRoutesVC.get(v).get(c).distanceTo(depot);
 				} else {
 					vehicleDistanceV[v] += vehicleRoutesVC.get(v).get(c).distanceTo(
 							vehicleRoutesVC.get(v).get(c - 1));
 				}
 				if (c == vehicleRoutesVC.get(v).size() - 1) {
-					vehicleDistanceV[v] += vehicleRoutesVC.get(v).get(c).distanceTo(customers[0]);
+					vehicleDistanceV[v] += vehicleRoutesVC.get(v).get(c).distanceTo(depot);
 				}
 			}
 			satisfiesCapacity = satisfiesCapacity && (vehicleDemandV[v] <= vehicleCapacity);

@@ -21,7 +21,10 @@ public class Main
 	Timer watch = new Timer();
 	watch.start();
 	VRPInstance instance = new VRPInstance(input);
-	instance.outputSolution(instance.findFeasibleSolution(), filename + ".sol");
+	VehicleConfiguration initVC = instance.findFeasibleSolution();
+	instance.outputSolution(initVC, filename + ".init.sol");
+	Proposal prop = new RandomProposal(new Proposal[]{new CustomerSwapProposal(), new CustomerMoveProposal(), new RouteReversalProposal()});
+	instance.outputSolution(instance.iterativeImprovement(initVC, prop), filename + ".sol");
 	watch.stop();
 
 	System.out.println("Instance: " + filename + 

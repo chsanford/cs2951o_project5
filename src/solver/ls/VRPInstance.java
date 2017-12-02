@@ -19,9 +19,11 @@ public class VRPInstance
 	int numVehicles;           	// the number of vehicles
 	int vehicleCapacity;			// the capacity of the vehicles
 	int[] demandOfCustomer;		// the demand of each customer
+	int[] demandOfNonDepotCustomer; // demand of all customers, excluding the depot
 	double[] xCoordOfCustomer;	// the x coordinate of each customer
 	double[] yCoordOfCustomer;	// the y coordinate of each customer
 		
+	Customer depot;
 	Customer[] customers;
 	
 	public VRPInstance(String fileName)
@@ -45,20 +47,28 @@ public class VRPInstance
 		System.out.println("Vehicle capacity: " + vehicleCapacity);
 
 		demandOfCustomer = new int[numCustomers];
+		demandOfNonDepotCustomer = new int[numCustomers - 1];
 		xCoordOfCustomer = new double[numCustomers];
 		yCoordOfCustomer = new double[numCustomers];
-		customers = new Customer[numCustomers];
+		// customers only reporesents non-depots
+		customers = new Customer[numCustomers - 1];
 		
 		for (int i = 0; i < numCustomers; i++)
 		{
 			demandOfCustomer[i] = read.nextInt();
 			xCoordOfCustomer[i] = read.nextDouble();
 			yCoordOfCustomer[i] = read.nextDouble();
-			customers[i] = new Customer(
-					xCoordOfCustomer[i], yCoordOfCustomer[i], demandOfCustomer[i], i);
+			if (i == 0) {
+				depot = new Customer(
+						xCoordOfCustomer[i], yCoordOfCustomer[i], demandOfCustomer[i], i);
+			} else {
+				customers[i - 1] = new Customer(
+						xCoordOfCustomer[i], yCoordOfCustomer[i], demandOfCustomer[i], i);
+				demandOfNonDepotCustomer[i - 1] = demandOfCustomer[i];
+			}
 		}
-
-		for (int i = 0; i < numCustomers; i++)
+		
+		for (int i = 0; i < numCustomers - 1; i++)
 			System.out.println(demandOfCustomer[i] + " " + xCoordOfCustomer[i] + " " + yCoordOfCustomer[i]);
 	}
 
@@ -66,23 +76,23 @@ public class VRPInstance
 	public VehicleConfiguration findFeasibleSolution() {
 		try {
 			IloCP cp = new IloCP();
-			IloIntVar[][] assignedToVehicleVC = new IloIntVar[numVehicles][numCustomers];
-			IloIntExpr[][] assignedToVehicleCV = new IloIntExpr[numCustomers][numVehicles];
+			IloIntVar[][] assignedToVehicleVC = new IloIntVar[numVehicles][numCustomers - 1];
+			IloIntExpr[][] assignedToVehicleCV = new IloIntExpr[numCustomers - 1][numVehicles];
 			for (int v = 0; v < numVehicles; v++) {
-				for (int c = 0; c < numCustomers; c++) {
+				for (int c = 0; c < numCustomers - 1; c++) {
 					assignedToVehicleVC[v][c] = cp.intVar(0, 1);
 					assignedToVehicleCV[c][v] = assignedToVehicleVC[v][c];
 				}
-				cp.add(cp.le(cp.prod(assignedToVehicleVC[v], demandOfCustomer), vehicleCapacity));
+				cp.add(cp.le(cp.prod(assignedToVehicleVC[v], demandOfNonDepotCustomer), vehicleCapacity));
 			}
-			for (int c = 0; c < numCustomers; c++) {
+			for (int c = 0; c < numCustomers - 1; c++) {
 				cp.add(cp.eq(cp.sum(assignedToVehicleCV[c]), 1));
 			}
 			if (cp.solve()) {
 				List<List<Customer>> vehicleRoutesVC = new ArrayList<List<Customer>>(numVehicles);
 				for (int v = 0; v < numVehicles; v++) {
 					vehicleRoutesVC.add(new ArrayList<Customer>());
-					for (int c = 0; c < numCustomers; c++) {
+					for (int c = 0; c < numCustomers - 1; c++) {
 						if (cp.getValue(assignedToVehicleVC[v][c]) == 1) {
 							vehicleRoutesVC.get(v).add(customers[c]);
 						}
@@ -99,6 +109,25 @@ public class VRPInstance
 			System.out.println("Error: " + e);
 			return null;
 		}
+	}
+	
+	/**
+	 * Iteratively improves on a single solution. Random proposals are generated and accepted iff
+	 * they have a better objective function than the current configuration.
+	 */
+	public VehicleConfiguration iterativeImprovement(VehicleConfiguration vc, Proposal prop) {
+		int MAX_TIME = 10000;
+		long start_time = System.currentTimeMillis();
+		long end_time = System.currentTimeMillis();
+		while (end_time - start_time < MAX_TIME) {
+			VehicleConfiguration proposedVC = prop.proposal(vc);
+			if (proposedVC.satisfiesCapacity && proposedVC.totalDistance < vc.totalDistance) {
+				vc = proposedVC;
+			}
+			end_time = System.currentTimeMillis();
+		}
+		return vc;
+		
 	}
 	
 	public void outputSolution(VehicleConfiguration vc, String fileName) {
