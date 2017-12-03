@@ -30,17 +30,8 @@ public class RandomRouteSplittingProposal implements Proposal  {
 		// Randomly select an index from the two
 		int randomCustomer1vehicle1 = ThreadLocalRandom.current().nextInt(0, vehicleOriginalRoute1.size() + 1);
 		int randomCustomer2vehicle1 = ThreadLocalRandom.current().nextInt(0, vehicleOriginalRoute1.size() + 1);
-		while (randomCustomer1vehicle1 == randomCustomer2vehicle1) 
-		{
-			randomCustomer2vehicle1 = ThreadLocalRandom.current().nextInt(0, vehicleOriginalRoute1.size() + 1);			
-		}
 		int randomCustomer1vehicle2 = ThreadLocalRandom.current().nextInt(0, vehicleOriginalRoute2.size() + 1);
 		int randomCustomer2vehicle2 = ThreadLocalRandom.current().nextInt(0, vehicleOriginalRoute2.size() + 1);
-
-		while (randomCustomer1vehicle2 == randomCustomer2vehicle2) 
-		{
-			randomCustomer2vehicle2 = ThreadLocalRandom.current().nextInt(0, vehicleOriginalRoute2.size() + 1);
-		}
 		// Make sure the customer 1 index value is smaller than the customer 2 index.
 		// This will just make the  calculation a lot easier to manage later on.
 		int temp = 0;	   
@@ -61,36 +52,38 @@ public class RandomRouteSplittingProposal implements Proposal  {
 		// the  other range will go into another array.
 
 		List<Customer> vehicleNewRoute1 = new ArrayList<>();
-		List<Customer> vehicleNewRoute2 = new ArrayList<>();		
-		int vehicle1RouteIndex = 0;
-		for (Customer c : vehicleOriginalRoute1) 
+		List<Customer> vehicleNewRoute2 = new ArrayList<>();	
+		
+	
+		for (int i = 0; i < vc.vehicleRoutesVC.get(vehicleIndex1).size(); i++) 
 		{
-			if ( (randomCustomer1vehicle1 <= vehicle1RouteIndex) && (vehicle1RouteIndex < randomCustomer2vehicle1)) 
+			vehicleNewRoute1.add(vc.vehicleRoutesVC.get(vehicleIndex1).get(i));
+			
+			if ( i == randomCustomer1vehicle1 ) 
 			{
-				vehicleNewRoute1.add(c);
+				for (int j = randomCustomer1vehicle2; j <= randomCustomer2vehicle2; j++) 
+				{
+					vehicleNewRoute1.add(vc.vehicleRoutesVC.get(vehicleIndex2).get(i));
+				}
+				
+				i = randomCustomer2vehicle1;
 			}
-			else 
-			{
-				vehicleNewRoute2.add(c);	
-			}
-			vehicle1RouteIndex++;
 		}
 
-		int vehicle2RouteIndex = 0;
-
-		for (Customer c : vehicleOriginalRoute2) 
+		for (int i = 0; i < vc.vehicleRoutesVC.get(vehicleIndex2).size(); i++) 
 		{
-			if ( (randomCustomer1vehicle2 <= vehicle2RouteIndex ) && (vehicle2RouteIndex < randomCustomer2vehicle2) ) 
+			vehicleNewRoute2.add(vc.vehicleRoutesVC.get(vehicleIndex2).get(i));
+			
+			if ( i == randomCustomer1vehicle2 ) 
 			{
-				vehicleNewRoute1.add(c);
+				for (int j = randomCustomer1vehicle1; j <= randomCustomer2vehicle1; j++) 
+				{
+					vehicleNewRoute2.add(vc.vehicleRoutesVC.get(vehicleIndex1).get(i));
+				}
+				
+				i = randomCustomer2vehicle2;
 			}
-			else 
-			{
-				vehicleNewRoute2.add(c);	
-			}			
-			vehicle2RouteIndex++;
 		}
-		// Now replaces the original list with the newly generated list.
 		
 		// Empty the list that are currently set
 		vc.vehicleRoutesVC.get(vehicleIndex1).clear();		
