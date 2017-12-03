@@ -26,13 +26,13 @@ public class Main
 	Proposal prop = new RandomProposal(new Proposal[]{
 					new CustomerSwapProposal(),
 					new CustomerMoveProposal(),
-					new RouteReversalProposal(),
-					new RandomRouteSplittingProposal()});
-	instance.outputSolution(instance.simulatedAnnealing(initVC, prop), filename + ".sol");
+					new RouteReversalProposal()});
+	VehicleConfiguration solution = instance.simulatedAnnealing(initVC, prop);
+	instance.outputSolution(solution, filename + ".sol");
 	watch.stop();
 
 	System.out.println("Instance: " + filename + 
 					   " Time: " 	+ String.format("%.2f",watch.getTime()) +
-					   " Result: " 	+ "N/A" + " Solution: N/A");
+					   " Result: " 	+ solution.totalDistance + " Solution: " + solution.asString());
   }
 }

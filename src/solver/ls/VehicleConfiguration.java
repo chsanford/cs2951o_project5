@@ -51,6 +51,19 @@ public class VehicleConfiguration {
 		}
 	}
 	
+	public String asString() {
+		String output = "0";
+		if (isOptimal) output = "1";
+		for (List<Customer> route : vehicleRoutesVC) {
+			output += " 0";
+			for (Customer c : route) {
+				output += c.number;
+			}
+			output += " 0";
+		}
+		return output;
+	}
+	
 	
 
 }
