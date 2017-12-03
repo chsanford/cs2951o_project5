@@ -132,7 +132,7 @@ public class VRPInstance
 	
 	
 	public VehicleConfiguration simulatedAnnealing(VehicleConfiguration vc, Proposal prop) {
-		int maxTime = 30 * 1000;
+		int maxTime = 270 * 1000;
 		double tempDecay = 0.95;
 		int proposalsPerTemp = (int) Math.pow(numCustomers, 2);
 		long startTime = System.currentTimeMillis();
