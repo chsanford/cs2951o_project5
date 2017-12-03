@@ -130,6 +130,38 @@ public class VRPInstance
 		
 	}
 	
+	
+	public VehicleConfiguration simulatedAnnealing(VehicleConfiguration vc, Proposal prop) {
+		int maxTime = 250 * 1000;
+		double tempDecay = 0.95;
+		int proposalsPerTemp = (int) Math.pow(numCustomers, 2);
+		long startTime = System.currentTimeMillis();
+		long endTime = System.currentTimeMillis();
+		double temperature = vc.totalDistance;
+		int iterationsNoChange = 0;
+		int maxIterationsNoChange = 5;
+		while (endTime - startTime < maxTime && iterationsNoChange < maxIterationsNoChange) {
+			double initialTotalDistance = vc.totalDistance;
+			for (int i = 0; i < proposalsPerTemp; i++) {
+				VehicleConfiguration proposedVC = prop.proposal(vc);
+				if (proposedVC.satisfiesCapacity && proposedVC.totalDistance <= vc.totalDistance) {
+					vc = proposedVC;
+				} else if (proposedVC.satisfiesCapacity &&
+						Math.exp((vc.totalDistance - proposedVC.totalDistance) / temperature) > Math.random()) {
+					vc = proposedVC;
+				}
+				endTime = System.currentTimeMillis();
+			}
+			if (vc.totalDistance == initialTotalDistance) iterationsNoChange++;
+			else iterationsNoChange = 0;
+			System.out.println("Temp: " + temperature + ", Time: " + (endTime - startTime) +
+					", Distance: " + vc.totalDistance);
+			temperature *= tempDecay;
+		}
+		return vc;
+	}
+
+	
 	public void outputSolution(VehicleConfiguration vc, String fileName) {
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, false));
