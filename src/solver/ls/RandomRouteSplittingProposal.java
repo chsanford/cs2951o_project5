@@ -54,7 +54,6 @@ public class RandomRouteSplittingProposal implements Proposal  {
 		List<Customer> vehicleNewRoute1 = new ArrayList<>();
 		List<Customer> vehicleNewRoute2 = new ArrayList<>();	
 		
-	
 		for (int i = 0; i < vc.vehicleRoutesVC.get(vehicleIndex1).size(); i++) 
 		{
 			vehicleNewRoute1.add(vc.vehicleRoutesVC.get(vehicleIndex1).get(i));
@@ -63,7 +62,7 @@ public class RandomRouteSplittingProposal implements Proposal  {
 			{
 				for (int j = randomCustomer1vehicle2; j <= randomCustomer2vehicle2; j++) 
 				{
-					vehicleNewRoute1.add(vc.vehicleRoutesVC.get(vehicleIndex2).get(i));
+					vehicleNewRoute1.add(vc.vehicleRoutesVC.get(vehicleIndex2).get(j));
 				}
 				
 				i = randomCustomer2vehicle1;
@@ -78,7 +77,7 @@ public class RandomRouteSplittingProposal implements Proposal  {
 			{
 				for (int j = randomCustomer1vehicle1; j <= randomCustomer2vehicle1; j++) 
 				{
-					vehicleNewRoute2.add(vc.vehicleRoutesVC.get(vehicleIndex1).get(i));
+					vehicleNewRoute2.add(vc.vehicleRoutesVC.get(vehicleIndex1).get(j));
 				}
 				
 				i = randomCustomer2vehicle2;
