@@ -28,18 +28,18 @@ public class RandomRouteSplittingProposal implements Proposal  {
 		List<Customer> vehicleOriginalRoute2 = vc.vehicleRoutesVC.get(vehicleIndex2);
 
 		// Randomly select an index from the two
-		int randomCustomer1vehicle1 = (int)(Math.random() * (vehicleOriginalRoute1.size() - 1));
-		int randomCustomer2vehicle1 = (int)(Math.random() * (vehicleOriginalRoute1.size() - 1));
+		int randomCustomer1vehicle1 = ThreadLocalRandom.current().nextInt(0, vehicleOriginalRoute1.size() + 1);
+		int randomCustomer2vehicle1 = ThreadLocalRandom.current().nextInt(0, vehicleOriginalRoute1.size() + 1);
 		while (randomCustomer1vehicle1 == randomCustomer2vehicle1) 
 		{
-			randomCustomer2vehicle1 = (int)(Math.random() * (vehicleOriginalRoute1.size() - 1));			
+			randomCustomer2vehicle1 = ThreadLocalRandom.current().nextInt(0, vehicleOriginalRoute1.size() + 1);			
 		}
-		int randomCustomer1vehicle2 = (int)(Math.random() * (vehicleOriginalRoute2.size() - 1));
-		int randomCustomer2vehicle2 = (int)(Math.random() * (vehicleOriginalRoute2.size() - 1));
+		int randomCustomer1vehicle2 = ThreadLocalRandom.current().nextInt(0, vehicleOriginalRoute2.size() + 1);
+		int randomCustomer2vehicle2 = ThreadLocalRandom.current().nextInt(0, vehicleOriginalRoute2.size() + 1);
 
 		while (randomCustomer1vehicle2 == randomCustomer2vehicle2) 
 		{
-			randomCustomer2vehicle2 = (int)(Math.random() * (vehicleOriginalRoute2.size() - 1));
+			randomCustomer2vehicle2 = ThreadLocalRandom.current().nextInt(0, vehicleOriginalRoute2.size() + 1);
 		}
 		// Make sure the customer 1 index value is smaller than the customer 2 index.
 		// This will just make the  calculation a lot easier to manage later on.

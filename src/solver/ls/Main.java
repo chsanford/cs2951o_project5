@@ -23,7 +23,11 @@ public class Main
 	VRPInstance instance = new VRPInstance(input);
 	VehicleConfiguration initVC = instance.findFeasibleSolution();
 	instance.outputSolution(initVC, filename + ".init.sol");
-	Proposal prop = new RandomProposal(new Proposal[]{new CustomerSwapProposal(), new CustomerMoveProposal(), new RouteReversalProposal()});
+	Proposal prop = new RandomProposal(new Proposal[]{
+					new CustomerSwapProposal(),
+					new CustomerMoveProposal(),
+					new RouteReversalProposal(),
+					new RandomRouteSplittingProposal()});
 	instance.outputSolution(instance.simulatedAnnealing(initVC, prop), filename + ".sol");
 	watch.stop();
 
