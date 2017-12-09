@@ -27,16 +27,20 @@ public class RouteReversalProposal implements Proposal {
 		for (int v = 0; v < vc.numVehicles; v++) {
 			List<Customer> newRoute = new ArrayList<>();
 			List<Customer> currentRoute = vc.vehicleRoutesVC.get(v);
-			for (int c = 0; c < currentRoute.size(); c++) {
-				if (v != vehicleIndex || c < routeIndex1 || c > routeIndex2) {
-					newRoute.add(currentRoute.get(c));
-				} else {
-					newRoute.add(currentRoute.get(routeIndex2 + routeIndex1 - c));
+			if (v == vehicleIndex) {
+				for (int c = 0; c < currentRoute.size(); c++) {
+					if (v != vehicleIndex || c < routeIndex1 || c > routeIndex2) {
+						newRoute.add(currentRoute.get(c));
+					} else {
+						newRoute.add(currentRoute.get(routeIndex2 + routeIndex1 - c));
+					}
 				}
+				proposedVehicleRoutesVC.add(newRoute);
+			} else {
+				proposedVehicleRoutesVC.add(currentRoute);
 			}
-			proposedVehicleRoutesVC.add(newRoute);
 		}
-		
+
 		return new VehicleConfiguration(vc.vrp, proposedVehicleRoutesVC);
 	}
 

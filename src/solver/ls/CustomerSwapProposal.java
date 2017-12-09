@@ -24,19 +24,24 @@ public class CustomerSwapProposal implements Proposal {
 		
 		List<List<Customer>> proposedVehicleRoutesVC = new ArrayList<>();
 		for (List<Customer> vehicleRouteC : vc.vehicleRoutesVC) {
-			List<Customer> newRoute = new ArrayList<>();
-			for (Customer c : vehicleRouteC) {
-				if (c.number == customerIndex1) {
-					newRoute.add(vc.customers[customerIndex2 - 1]);
-				} else if (c.number == customerIndex2) {
-					newRoute.add(vc.customers[customerIndex1 - 1]);
-				} else {
-					newRoute.add(c);
+			if (vehicleRouteC.contains(vc.customers[customerIndex1 - 1]) ||
+					vehicleRouteC.contains(vc.customers[customerIndex2 - 1])) {
+				List<Customer> newRoute = new ArrayList<>();
+				for (Customer c : vehicleRouteC) {
+					if (c.number == customerIndex1) {
+						newRoute.add(vc.customers[customerIndex2 - 1]);
+					} else if (c.number == customerIndex2) {
+						newRoute.add(vc.customers[customerIndex1 - 1]);
+					} else {
+						newRoute.add(c);
+					}
 				}
+				proposedVehicleRoutesVC.add(newRoute);
+			} else {
+				proposedVehicleRoutesVC.add(vehicleRouteC);
 			}
-			proposedVehicleRoutesVC.add(newRoute);
 		}
-		
+
 		return new VehicleConfiguration(vc.vrp, proposedVehicleRoutesVC);
 	}
 

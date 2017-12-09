@@ -56,13 +56,14 @@ public class RouteSwapProposal implements Proposal {
 
 		for (int v = 0; v < vc.numVehicles; v++) {
 			if (v != vehicleIndex1 && v != vehicleIndex2) {
-				List<Customer> newRoute = new ArrayList<>();
+				//List<Customer> newRoute = new ArrayList<>();
 				List<Customer> currentRoute = vc.vehicleRoutesVC.get(v);
 
-				for (int c = 0; c < currentRoute.size(); c++) {
-					newRoute.add(currentRoute.get(c));
-				}
-				proposedVehicleRoutesVC.add(newRoute);
+				//for (int c = 0; c < currentRoute.size(); c++) {
+				//	newRoute.add(currentRoute.get(c));
+				//}
+				//proposedVehicleRoutesVC.add(newRoute);
+				proposedVehicleRoutesVC.add(currentRoute);
 			}
 		}
 

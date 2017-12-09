@@ -22,12 +22,13 @@ public class VRPInstance
 	int[] demandOfNonDepotCustomer; // demand of all customers, excluding the depot
 	double[] xCoordOfCustomer;	// the x coordinate of each customer
 	double[] yCoordOfCustomer;	// the y coordinate of each customer
+	long startTime;
 		
 	Customer depot;
 	Customer[] customers;
 	
-	public VRPInstance(String fileName)
-	{
+	public VRPInstance(String fileName) {
+		startTime = System.currentTimeMillis();
 		Scanner read = null;
 		try
 		{
@@ -132,31 +133,55 @@ public class VRPInstance
 	
 	
 	public VehicleConfiguration simulatedAnnealing(VehicleConfiguration vc, Proposal prop) {
-		int maxTime = 270 * 1000;
+		int maxTime = 290 * 1000;
 		double tempDecay = 0.95;
+		double fastTempDecay = 0.5;
 		int proposalsPerTemp = (int) Math.pow(numCustomers, 2);
-		long startTime = System.currentTimeMillis();
+		// Use more proposals per temperature on smaller instances
+		if (numCustomers < 100) {
+			proposalsPerTemp *= 5;
+		} else if (numCustomers < 200) {
+			proposalsPerTemp *= 3;
+		} else if (numCustomers < 300) {
+			proposalsPerTemp *= 2;
+		}
 		long endTime = System.currentTimeMillis();
 		double temperature = vc.totalDistance;
+		double maxAcceptanceCutoff = 0.97;
 		int iterationsNoChange = 0;
 		int maxIterationsNoChange = 5;
+		double significantChangeMargin = Math.pow(10, -6);
 		while (endTime - startTime < maxTime && iterationsNoChange < maxIterationsNoChange) {
+			double numSatisfiable = 0;
+			double numAccepted = 0;
 			double initialTotalDistance = vc.totalDistance;
 			for (int i = 0; i < proposalsPerTemp; i++) {
 				VehicleConfiguration proposedVC = prop.proposal(vc);
+				if (proposedVC.satisfiesCapacity) numSatisfiable++;
 				if (proposedVC.satisfiesCapacity && proposedVC.totalDistance <= vc.totalDistance) {
 					vc = proposedVC;
+					numAccepted++;
 				} else if (proposedVC.satisfiesCapacity &&
 						Math.exp((vc.totalDistance - proposedVC.totalDistance) / temperature) > Math.random()) {
 					vc = proposedVC;
+					numAccepted++;
 				}
 				endTime = System.currentTimeMillis();
 			}
-			if (vc.totalDistance == initialTotalDistance) iterationsNoChange++;
+			// If change has been very minimal, mark that nothing changed
+			if (Math.abs(vc.totalDistance - initialTotalDistance) < vc.totalDistance * significantChangeMargin) {
+				iterationsNoChange++;
+			}
 			else iterationsNoChange = 0;
 			System.out.println("Temp: " + temperature + ", Time: " + (endTime - startTime) +
 					", Distance: " + vc.totalDistance);
-			temperature *= tempDecay;
+			// Significantly reduce the value of the temperature if it accepts over 97% of proposals
+			if (numAccepted / numSatisfiable >= maxAcceptanceCutoff) {
+				temperature *= fastTempDecay;
+			} else {
+				temperature *= tempDecay;
+			}
+			
 		}
 		return vc;
 	}
