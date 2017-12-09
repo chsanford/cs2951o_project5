@@ -35,14 +35,12 @@ public class RandomRouteSplittingProposal implements Proposal  {
 		// Make sure the customer 1 index value is smaller than the customer 2 index.
 		// This will just make the  calculation a lot easier to manage later on.
 		int temp = 0;	   
-		if (randomCustomer1vehicle1 > randomCustomer2vehicle1) 
-		{
+		if (randomCustomer1vehicle1 > randomCustomer2vehicle1) {
 			temp = randomCustomer2vehicle1;
 			randomCustomer2vehicle1 = randomCustomer1vehicle1; 
 			randomCustomer1vehicle1 = temp;
 		}
-		if (randomCustomer1vehicle2 > randomCustomer2vehicle2) 
-		{
+		if (randomCustomer1vehicle2 > randomCustomer2vehicle2) {
 			temp = randomCustomer2vehicle2;
 			randomCustomer2vehicle2 = randomCustomer1vehicle2;
 			randomCustomer1vehicle2 = temp;
@@ -50,64 +48,56 @@ public class RandomRouteSplittingProposal implements Proposal  {
 
 		// The customers within a range will go into one array, then the values out side 
 		// the  other range will go into another array.
-
 		List<Customer> vehicleNewRoute1 = new ArrayList<>();
-		List<Customer> vehicleNewRoute2 = new ArrayList<>();	
+		List<Customer> vehicleNewRoute2 = new ArrayList<>();
 		
-		for (int i = 0; i < vc.vehicleRoutesVC.get(vehicleIndex1).size(); i++) 
-		{
-			vehicleNewRoute1.add(vc.vehicleRoutesVC.get(vehicleIndex1).get(i));
-			
-			if ( i == randomCustomer1vehicle1 ) 
-			{
-				for (int j = randomCustomer1vehicle2; j <= randomCustomer2vehicle2; j++) 
-				{
-					vehicleNewRoute1.add(vc.vehicleRoutesVC.get(vehicleIndex2).get(j));
-				}
-				
-				i = randomCustomer2vehicle1;
-			}
+		List<Customer> vehicleOldRoute1 = vc.vehicleRoutesVC.get(vehicleIndex1);
+		List<Customer> vehicleOldRoute2 = vc.vehicleRoutesVC.get(vehicleIndex2);
+		
+		for (int i = 0; i < randomCustomer1vehicle1; i++) {
+			vehicleNewRoute1.add(vehicleOldRoute1.get(i));
 		}
-
-		for (int i = 0; i < vc.vehicleRoutesVC.get(vehicleIndex2).size(); i++) 
-		{
-			vehicleNewRoute2.add(vc.vehicleRoutesVC.get(vehicleIndex2).get(i));
-			
-			if ( i == randomCustomer1vehicle2 ) 
-			{
-				for (int j = randomCustomer1vehicle1; j <= randomCustomer2vehicle1; j++) 
-				{
-					vehicleNewRoute2.add(vc.vehicleRoutesVC.get(vehicleIndex1).get(j));
-				}
-				
-				i = randomCustomer2vehicle2;
-			}
+		for (int i = randomCustomer1vehicle2; i < randomCustomer2vehicle2; i++) {
+			vehicleNewRoute1.add(vehicleOldRoute2.get(i));
+		}
+		for (int i = randomCustomer2vehicle1; i < vehicleOldRoute1.size(); i++) {
+			vehicleNewRoute1.add(vehicleOldRoute1.get(i));
 		}
 		
-		// Empty the list that are currently set
-		vc.vehicleRoutesVC.get(vehicleIndex1).clear();		
-		// Fill the new list structure.
-		for (Customer c : vehicleNewRoute1) 
-		{
-			vc.vehicleRoutesVC.get(vehicleIndex1).add(c);
+		for (int i = 0; i < randomCustomer1vehicle2; i++) {
+			vehicleNewRoute2.add(vehicleOldRoute2.get(i));
 		}
-
-		// Empty the list that are currently set
-		vc.vehicleRoutesVC.get(vehicleIndex2).clear();
-		// Fill the new list structure.
-		for (Customer c : vehicleNewRoute2) 
-		{
-			vc.vehicleRoutesVC.get(vehicleIndex2).add(c);
+		for (int i = randomCustomer1vehicle1; i < randomCustomer2vehicle1; i++) {
+			vehicleNewRoute2.add(vehicleOldRoute1.get(i));
+		}
+		for (int i = randomCustomer2vehicle2; i < vehicleOldRoute2.size(); i++) {
+			vehicleNewRoute2.add(vehicleOldRoute2.get(i));
 		}
 		
 		// Copy original configuration
 		List<List<Customer>> proposedVehicleRoutesVC = new ArrayList<>();
 		
-		for (List<Customer> vehicleRouteC : vc.vehicleRoutesVC) 
-		{
-			proposedVehicleRoutesVC.add(vehicleRouteC);	
+		for (List<Customer> vehicleRouteC : vc.vehicleRoutesVC) {
+			List<Customer> newRoute = new ArrayList<>();
+			for (Customer c : vehicleRouteC) {
+				newRoute.add(c);
+			}
+			proposedVehicleRoutesVC.add(newRoute);
 		}
 		
+		
+		proposedVehicleRoutesVC.set(vehicleIndex1, vehicleNewRoute1);
+		proposedVehicleRoutesVC.set(vehicleIndex2, vehicleNewRoute2);
+//		proposedVehicleRoutesVC.get(vehicleIndex1).clear();	
+//		for (Customer c : vehicleNewRoute1) {
+//			proposedVehicleRoutesVC.get(vehicleIndex1).add(c);
+//		}
+//		
+//		proposedVehicleRoutesVC.get(vehicleIndex2).clear();
+//		for (Customer c : vehicleNewRoute2) {
+//			proposedVehicleRoutesVC.get(vehicleIndex2).add(c);
+//		}
+//		
 		return new VehicleConfiguration(vc.vrp, proposedVehicleRoutesVC);		
 	}
 }

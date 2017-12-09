@@ -57,7 +57,7 @@ public class VehicleConfiguration {
 		for (List<Customer> route : vehicleRoutesVC) {
 			output += " 0";
 			for (Customer c : route) {
-				output += c.number;
+				output += (" " + c.number);
 			}
 			output += " 0";
 		}

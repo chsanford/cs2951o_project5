@@ -50,7 +50,7 @@ public class VRPInstance
 		demandOfNonDepotCustomer = new int[numCustomers - 1];
 		xCoordOfCustomer = new double[numCustomers];
 		yCoordOfCustomer = new double[numCustomers];
-		// customers only reporesents non-depots
+		// customers only represents non-depots
 		customers = new Customer[numCustomers - 1];
 		
 		for (int i = 0; i < numCustomers; i++)
