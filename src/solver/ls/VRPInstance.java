@@ -185,6 +185,27 @@ public class VRPInstance
 		}
 		return vc;
 	}
+	
+	/**
+	 * Repeats simulated annealing while staying within a 250 second time limit to improve solutions,
+	 * generating a new feasible solution each time
+	 */
+	public VehicleConfiguration repeatedOptimization(Proposal prop) {
+		VehicleConfiguration bestVC = simulatedAnnealing(findFeasibleSolution(), prop);
+		long endTime = System.currentTimeMillis();
+		int timeLimit = 250000;
+		int maxIterations = 10;
+		int iterationTime = (int) Math.floor(timeLimit / (endTime - startTime));
+		int repetitions = Math.min(maxIterations, iterationTime);
+		for (int i = 0; i < repetitions; i++) {
+			if (iterationTime + endTime - startTime > timeLimit) break;
+			VehicleConfiguration proposedVC = simulatedAnnealing(findFeasibleSolution(), prop);
+			if (proposedVC.totalDistance < bestVC.totalDistance) {
+				bestVC = proposedVC;
+			}
+		}
+		return bestVC;
+	}
 
 	
 	public void outputSolution(VehicleConfiguration vc, String fileName) {
